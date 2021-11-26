@@ -22,16 +22,16 @@ class Game():
 
         Parameters
         ----------
-        playerAI   - Human player AI, of type PlayerAI. default = None 
+        playerAI   - Human player AI, of type PlayerAI. default = None
 
         computerAI - Human or Computer Opponent. default = None
-        
+
         N  - dimension of grid.
 
         '''
         self.grid       = Grid(N)
-        self.playerAI   = playerAI or ComputerAI() 
-        self.computerAI = computerAI or ComputerAI() 
+        self.playerAI   = playerAI or ComputerAI()
+        self.computerAI = computerAI or ComputerAI()
         self.dim        = N
         self.over       = False
         self.displayer = displayer
@@ -39,13 +39,13 @@ class Game():
     def initialize_game(self):
 
         p1_index, p2_index = (0, self.dim // 2), (self.dim -1, self.dim // 2)
-        
+
         self.grid.setCellValue(p1_index, 1)
         self.playerAI.setPosition(p1_index)
 
         self.grid.setCellValue(p2_index, 2)
         self.computerAI.setPosition(p2_index)
-        
+
     def is_over(self, turn):
         """Check if game is over, i.e., Player or Opponent has no moves to make"""
         # check if Player has won
@@ -62,10 +62,10 @@ class Game():
         if len(player_neighbors) == 0:
             self.over = True
             return 2
-        
+
         elif self.over:
             return turn + 1
-        else: 
+        else:
             return 0
 
     def is_valid_move(self, grid : Grid, move : tuple):
@@ -97,15 +97,15 @@ class Game():
 
         intended position : the (x,y) coordinates to which the player intends to throw the trap to.
         '''
- 
+
         # find neighboring cells
         neighbors = grid.get_neighbors(intended_position)
 
         neighbors = [neighbor for neighbor in neighbors if grid.getCellValue(neighbor) <= 0]
         n = len(neighbors)
-        
+
         probs = np.ones(1 + n)
-        
+
         # compute probability of success, p
         p = 1 - 0.05*(manhattan_distance(player.getPosition(), intended_position) - 1)
 
@@ -115,9 +115,9 @@ class Game():
 
         # add desired coordinates to neighbors
         neighbors.insert(0, intended_position)
-        
+
         result = np.random.choice(np.arange(n + 1), p = probs)
-        
+
         return neighbors[result]
 
     def updateAlarm(self, currTime):
@@ -136,19 +136,19 @@ class Game():
         self.displayer.display(self.grid)
 
         turn = PLAYER_TURN
-        
+
         while not self.over:
             self.prevTime = time.process_time()
             grid_copy = self.grid.clone()
 
             move = None
-            
+
             if turn == 0:
 
                 print("Player's Turn: ")
 
                 # find best move; should return two coordinates - new position and bombed tile.
-                move = self.playerAI.getMove(grid_copy)
+                move = self.playerAI.getMove(grid_copy, self.computerAI)
 
                 # if move is valid, perform it
                 if self.is_valid_move(self.grid, move):
@@ -158,7 +158,7 @@ class Game():
                     self.over = True
                     print(f"Tried to move to : {move}")
                     print("invalid Player AI move!")
-                
+
                 intended_trap = self.playerAI.getTrap(self.grid.clone())
 
                 if self.is_valid_trap(self.grid, intended_trap):
@@ -166,7 +166,7 @@ class Game():
                     self.grid.trap(trap)
                     print(f"Throwing a trap to: {intended_trap}. Trap landed in {trap}")
 
-                else: 
+                else:
                     self.over = True
                     print(f"Tried to put trap in {trap}")
                     print("Invalid trap!")
@@ -174,7 +174,7 @@ class Game():
             else:
 
                 print("Opponent's Turn : ")
-                
+
                 # make move
                 move = self.computerAI.getMove(grid_copy)
 
@@ -193,14 +193,14 @@ class Game():
                     trap = self.throw(self.computerAI, self.grid, intended_trap)
                     self.grid.trap(trap)
                     print(f"Throwing a trap to: {intended_trap}. Trap landed in {trap}")
-                else: 
+                else:
                     self.over = True
                     print(f"Tried to put trap in {trap}")
                     print("Invalid trap!")
 
             if self.is_over(turn):
                 self.over = True
-            
+
             self.updateAlarm(time.process_time())
             turn = 1 - turn
             self.displayer.display(self.grid)
@@ -209,14 +209,14 @@ class Game():
         return self.is_over(turn)
 
 def main():
-    playerAI = ComputerAI() # change this to PlayerAI() to test your player!
+    playerAI = PlayerAI() # change this to PlayerAI() to test your player!
     computerAI = ComputerAI()
     displayer = Displayer()
     game = Game(playerAI = playerAI, computerAI = computerAI, N = 7, displayer=displayer)
-    
+
 
     result = game.play()
-    if result == 1: 
+    if result == 1:
         print("Player 1 wins!")
     elif result == 2:
         print("Player 1 loses!")
