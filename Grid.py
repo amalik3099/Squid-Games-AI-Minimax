@@ -1,29 +1,23 @@
 from copy import deepcopy
 import numpy as np
 
-"""
-Authors : Tom Cohen, 
-COMS 4701 - Artificial Intelligence
-Columbia University
-Prof. Ansaf Salleb-Aoissi
-"""
-
 
 class Grid():
     
     def __init__(self, N = 7) -> None:
         self.dim  = N
         self.map = np.zeros((N,N)) # empty board
+    
 
     def getAvailableCells(self):
         """
         Returns all available cells in the grid in the form of [(x_0,y_0), ..., (x_n, y_n)]
         """
-        indices = np.where(self.map == 0)
         
-        available = [(x,y) for x,y in list(zip(indices[0], indices[1]))]
-        
-        return available
+        return [(x,y) for x,y in np.argwhere(self.map == 0)]
+    
+    def getMap(self):
+        return self.map
 
     def setCellValue(self, pos: tuple, val):
         self.map[pos] = val
@@ -39,7 +33,16 @@ class Grid():
         grid_copy.map = deepcopy(self.map)
         return grid_copy
 
-    def get_neighbors(self, pos, only_available = False, include_traps = False):
+    def find(self, player_num : int):
+        """Find a player given the player's number."""
+        
+        assert(player_num in [1,2])
+        
+        result = tuple(np.argwhere(self.map == player_num)[0])
+
+        return result
+
+    def get_neighbors(self, pos, only_available = False):
 
         """
         Description
@@ -67,11 +70,13 @@ class Grid():
         
         return neighbors
 
+
     def move(self, move, player):
+
         """
         Description 
         -----------
-        Apply a move by specified player to board
+        Apply a move by specified player to the grid. 
 
         Parameters
         -----------
@@ -80,16 +85,37 @@ class Grid():
 
         player: the identifier of the player (1 for human, 2 for computer)
 
+        Returns
+        -------
+        the grid with the new configuration. 
+
         """
+
         old_pos = np.where(self.map == player)
         self.map[old_pos] = 0
         self.map[move] = player
 
-        return
+        return self
 
     def trap(self, pos):
+        """
+        Description 
+        -----------
+        Apply a trap to specified loaction
+
+        Parameters
+        -----------
+
+        pos: a tuple (x,y) reprsenting the coordinates in which to place trap
+
+        Returns
+        -------
+        the grid with the new configuration.
+
+        """
         self.map[pos] = -1
-        return
+
+        return self
 
     def print_grid(self):
         print(self.map)
