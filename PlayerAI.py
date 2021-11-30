@@ -29,7 +29,7 @@ class PlayerAI(BaseAI):
     def setPlayerNum(self, num):
         self.player_num = num
 
-    def getMove(self, grid: Grid, computerAI: BaseAI) -> tuple:
+    def getMove(self, grid: Grid) -> tuple:
         """
         YOUR CODE GOES HERE
 
@@ -43,7 +43,7 @@ class PlayerAI(BaseAI):
         You may adjust the input variables as you wish (though it is not necessary). Output has to be (x,y) coordinates.
 
         """
-        new_position = improved_score(self, grid, computerAI)
+        new_position = improved_score(self, grid)
         return new_position
 
     def getTrap(self, grid: Grid) -> tuple:
