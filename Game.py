@@ -232,7 +232,7 @@ class Game():
 def main():
 
     playerAI = PlayerAI() # change this to PlayerAI() to test your player!
-    computerAI = ComputerAI() # change this to a more sophisticated player you've coded
+    computerAI = EasyAI() # change this to a more sophisticated player you've coded
     displayer = Displayer()
     game = Game(playerAI = playerAI, computerAI = computerAI, N = 7, displayer=displayer)
 
@@ -241,6 +241,8 @@ def main():
         print("Player 1 wins!")
     elif result == 2:
         print("Player 1 loses!")
+
+    return result
 
 if __name__ == "__main__":
     main()
