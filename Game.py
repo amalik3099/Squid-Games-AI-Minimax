@@ -167,7 +167,7 @@ class Game():
                 print("Player's Turn: ")
 
                 # find best move; should return two coordinates - new position and bombed tile.
-                move = self.playerAI.getMove(grid_copy)
+                move = self.playerAI.getMove(grid_copy, self.computerAI)
 
                 # if move is valid, perform it
                 if self.is_valid_move(self.grid, self.playerAI, move):
@@ -231,7 +231,7 @@ class Game():
 
 def main():
 
-    playerAI = None # change this to PlayerAI() to test your player!
+    playerAI = PlayerAI() # change this to PlayerAI() to test your player!
     computerAI = ComputerAI() # change this to a more sophisticated player you've coded
     displayer = Displayer()
     game = Game(playerAI = playerAI, computerAI = computerAI, N = 7, displayer=displayer)
