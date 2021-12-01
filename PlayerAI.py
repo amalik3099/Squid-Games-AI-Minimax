@@ -6,6 +6,7 @@ import os
 from BaseAI import BaseAI
 from Grid import Grid
 from MoveHeuristics import improved_score
+from MoveExpectiMinimax import move_minimax_decision
 
 # TO BE IMPLEMENTED
 #
@@ -43,7 +44,8 @@ class PlayerAI(BaseAI):
         You may adjust the input variables as you wish (though it is not necessary). Output has to be (x,y) coordinates.
 
         """
-        new_position = improved_score(self, grid)
+        # new_position = improved_score(self, grid)
+        new_position = move_minimax_decision(self, grid)
         return new_position
 
     def getTrap(self, grid: Grid) -> tuple:
