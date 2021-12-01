@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import sys
-import os 
+import os
 # setting path to parent directory
 sys.path.append(os.getcwd())
 
@@ -19,35 +19,38 @@ class EasyAI(BaseAI):
 
     def setPosition(self, new_pos: tuple):
         self.pos = new_pos
-    
+
     def getPosition(self):
-        return self.pos 
+        return self.pos
 
     def setPlayerNum(self, num):
         self.player_num = num
 
     def getMove(self, grid):
         """ Returns a random, valid move """
-        
-        # find all available moves 
+
+        # find all available moves
         available_moves = grid.get_neighbors(self.pos, only_available = True)
 
         # make random move
         new_pos = random.choice(available_moves) if available_moves else None
-        
+
         return new_pos
 
     def getTrap(self, grid : Grid):
 
         """EasyAI throws randomly to the immediate neighbors of the opponent"""
-        
+
         # find opponent
         opponent = grid.find(3 - self.player_num)
-        
+
         # find all available cells in the grid
         available_cells = grid.get_neighbors(opponent, only_available=True)
 
+        if len(available_cells) == 0:
+            available_cells = grid.getAvailableCells()
+
         # throw to one of the available cells randomly
         trap = random.choice(available_cells)
-    
+
         return trap
