@@ -5,12 +5,11 @@ import sys
 import os
 from BaseAI import BaseAI
 from Grid import Grid
-from MoveExpectiMinimax import move_minimax_decision_with_a_b
-from ThrowExpectiMinimax import throw_minimax_decision
+from MoveExpectiMinimax import move_minimax_decision
 
 # TO BE IMPLEMENTED
 #
-class PlayerAI(BaseAI):
+class MediumAI(BaseAI):
 
     def __init__(self) -> None:
         # You may choose to add attributes to your player - up to you!
@@ -45,7 +44,7 @@ class PlayerAI(BaseAI):
 
         """
         # new_position = improved_score(self, grid)
-        new_position = move_minimax_decision_with_a_b(self, grid)
+        new_position = move_minimax_decision(self, grid)
         return new_position
 
     def getTrap(self, grid: Grid) -> tuple:
@@ -62,12 +61,19 @@ class PlayerAI(BaseAI):
         You may adjust the input variables as you wish (though it is not necessary). Output has to be (x,y) coordinates.
 
         """
+
+        """EasyAI throws randomly to the immediate neighbors of the opponent"""
+
+        # find opponent
+        opponent = grid.find(3 - self.player_num)
+
         # find all available cells in the grid
-        # available_cells = grid.getAvailableCells()
+        available_cells = grid.get_neighbors(opponent, only_available=True)
 
-        # find all available cells
-        # trap = random.choice(available_cells) if available_cells else None
+        if len(available_cells) == 0:
+            available_cells = grid.getAvailableCells()
 
-        trap = throw_minimax_decision(self, grid)
+        # throw to one of the available cells randomly
+        trap = random.choice(available_cells)
 
         return trap
