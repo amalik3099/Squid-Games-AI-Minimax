@@ -59,29 +59,31 @@ def throw_minimize(grid, AI, depth, depth_limit):
     return min_utility
 
 
-def move_minimax_decision_with_a_b(AI, grid):
+def throw_minimax_decision_with_a_b(AI, grid):
     depth = 0
     depth_limit = 3
-    move, _ = move_maximize_with_a_b(grid, AI, depth, depth_limit, -np.inf, np.inf)
-    return move
+    trap, _ = throw_maximize_with_a_b(grid, AI, depth, depth_limit, -np.inf, np.inf)
+    return trap
 
 
-def move_maximize_with_a_b(grid, AI, depth, depth_limit, alpha, beta):
+def throw_maximize_with_a_b(grid, AI, depth, depth_limit, alpha, beta):
 
     depth += 1
-    pos = grid.find(AI.player_num)
-    available_moves = grid.get_neighbors(pos, only_available=True)
-    if len(available_moves) == 0 or depth > depth_limit:
-        return pos, combine_heuristics(AI, grid)
+    opponent = grid.find(3 - AI.player_num)
+    available_cells = grid.get_neighbors(opponent, only_available=True)
+    if len(available_cells) == 0 or depth > depth_limit:
+        available_cells = grid.getAvailableCells()
+        trap = random.choice(available_cells)
+        return trap, combine_heuristics(AI, grid)
 
-    max_move, max_utility = None, -np.inf
-    for available_move in available_moves:
+    max_throw, max_utility = None, -np.inf
+    for available_cell in available_cells:
         grid_copy = grid.clone()
-        grid_copy.move(available_move, AI.player_num)
-        utility = move_minimize_with_a_b(grid_copy, AI, depth, depth_limit, alpha, beta)
+        grid_copy.trap(available_cell)
+        utility = throw_minimize_with_a_b(grid_copy, AI, depth, depth_limit, alpha, beta)
 
         if utility > max_utility:
-            max_move, max_utility = available_move, utility
+            max_throw, max_utility = available_cell, utility
 
         if max_utility >= beta:
             break
@@ -89,21 +91,22 @@ def move_maximize_with_a_b(grid, AI, depth, depth_limit, alpha, beta):
         if max_utility > alpha:
             alpha = max_utility
 
-    return max_move, max_utility
+    return max_throw, max_utility
 
 
-def move_minimize_with_a_b(grid, AI, depth, depth_limit, alpha, beta):
+def throw_minimize_with_a_b(grid, AI, depth, depth_limit, alpha, beta):
 
-    pos = grid.find(AI.player_num)
-    available_neighbors = grid.get_neighbors(pos, only_available=True)
-    if len(available_neighbors) == 0:
+    opponent_num = 3 - AI.player_num
+    opponent = grid.find(opponent_num)
+    available_cells = grid.get_neighbors(opponent, only_available=True)
+    if len(available_cells) == 0:
         return combine_heuristics(AI, grid)
 
     min_utility = np.inf
-    for available_neighbor in available_neighbors:
+    for available_cell in available_cells:
         grid_copy = grid.clone()
-        grid_copy.trap(available_neighbor)
-        _, utility = move_maximize_with_a_b(grid_copy, AI, depth, depth_limit, alpha, beta)
+        grid_copy.move(available_cell, opponent_num)
+        _, utility = throw_maximize_with_a_b(grid_copy, AI, depth, depth_limit, alpha, beta)
 
         if utility < min_utility:
             min_utility = utility

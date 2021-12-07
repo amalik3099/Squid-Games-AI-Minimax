@@ -6,7 +6,7 @@ import os
 from BaseAI import BaseAI
 from Grid import Grid
 from MoveExpectiMinimax import move_minimax_decision_with_a_b
-from ThrowExpectiMinimax import throw_minimax_decision
+from ThrowExpectiMinimax import throw_minimax_decision_with_a_b
 
 # TO BE IMPLEMENTED
 #
@@ -68,6 +68,6 @@ class PlayerAI(BaseAI):
         # find all available cells
         # trap = random.choice(available_cells) if available_cells else None
 
-        trap = throw_minimax_decision(self, grid)
+        trap = throw_minimax_decision_with_a_b(self, grid)
 
         return trap
