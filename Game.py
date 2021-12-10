@@ -3,7 +3,7 @@ from Grid import Grid
 from ComputerAI import ComputerAI
 from Displayer import Displayer
 from PlayerAI import PlayerAI
-# from test_players.EasyAI import EasyAI
+from test_players.EasyAI import EasyAI
 from test_players.MediumAI import MediumAI
 # from test_players.HardAI import HardAI
 # from test_players.MediumAI import MediumAI
@@ -234,7 +234,7 @@ class Game():
 def main():
 
     playerAI = PlayerAI() # change this to PlayerAI() to test your player!
-    computerAI = MediumAI() # change this to a more sophisticated player you've coded
+    computerAI = EasyAI() # change this to a more sophisticated player you've coded
     displayer = Displayer()
     game = Game(playerAI = playerAI, computerAI = computerAI, N = 7, displayer=displayer)
 
