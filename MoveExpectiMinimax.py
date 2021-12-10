@@ -6,7 +6,7 @@ from MoveHeuristics import improved_score_heuristic as evaluate
 from MoveHeuristics import combine_heuristics, prune_throw_options
 
 ALLOWANCE = 0.05
-TIME_LIMIT = 3 - ALLOWANCE
+TIME_LIMIT = 3 - 2 * ALLOWANCE
 
 def move_minimax_decision(AI, grid):
     depth = 0
