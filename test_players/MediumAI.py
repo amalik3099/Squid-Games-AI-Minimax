@@ -1,79 +1,86 @@
 import numpy as np
 import random
-import time
 import sys
-import os
+import os 
+# setting path to parent directory
+sys.path.append(os.getcwd())
+
 from BaseAI import BaseAI
 from Grid import Grid
-from MoveExpectiMinimax import move_minimax_decision
 
-# TO BE IMPLEMENTED
-#
 class MediumAI(BaseAI):
 
-    def __init__(self) -> None:
-        # You may choose to add attributes to your player - up to you!
+    def __init__(self, position = None) -> None:
         super().__init__()
-        self.pos = None
+        self.pos = position
         self.player_num = None
 
+    def setPosition(self, new_pos: tuple):
+        self.pos = new_pos
+    
     def getPosition(self):
-        return self.pos
-
-    def setPosition(self, new_position):
-        self.pos = new_position
-
-    def getPlayerNum(self):
-        return self.player_num
+        return self.pos 
 
     def setPlayerNum(self, num):
         self.player_num = num
 
-    def getMove(self, grid: Grid) -> tuple:
-        """
-        YOUR CODE GOES HERE
+    def getPlayerNum(self):
+        return self.player_num
 
-        The function should return a tuple of (x,y) coordinates to which the player moves.
+    def getMove(self, grid : Grid):
+        """ Moves based on available moves """
+        
+        # find all available moves 
+        available_moves = grid.get_neighbors(self.pos, only_available = True)
 
-        It should be the result of the ExpectiMinimax algorithm, maximizing over the Opponent's *Trap* actions,
-        taking into account the probabilities of them landing in the positions you believe they'd throw to.
+        states = [grid.clone().move(mv, self.player_num) for mv in available_moves]
 
-        Note that you are not required to account for the probabilities of it landing in a different cell.
+        # find move with best IS score
+        am_scores = np.array([AM(state, self.player_num) for state in states])
 
-        You may adjust the input variables as you wish (though it is not necessary). Output has to be (x,y) coordinates.
+        new_pos = available_moves[np.argmax(am_scores)]
+        
+        return new_pos
 
-        """
-        # new_position = improved_score(self, grid)
-        new_position = move_minimax_decision(self, grid)
-        return new_position
-
-    def getTrap(self, grid: Grid) -> tuple:
-        """
-        YOUR CODE GOES HERE
-
-        The function should return a tuple of (x,y) coordinates to which the player *WANTS* to throw the trap.
-
-        It should be the result of the ExpectiMinimax algorithm, maximizing over the Opponent's *Move* actions,
-        taking into account the probabilities of it landing in the positions you want.
-
-        Note that you are not required to account for the probabilities of it landing in a different cell.
-
-        You may adjust the input variables as you wish (though it is not necessary). Output has to be (x,y) coordinates.
-
-        """
+    def getTrap(self, grid : Grid):
 
         """EasyAI throws randomly to the immediate neighbors of the opponent"""
-
-        # find opponent
+        
+        # find players
         opponent = grid.find(3 - self.player_num)
 
         # find all available cells in the grid
-        available_cells = grid.get_neighbors(opponent, only_available=True)
+        available_neighbors = grid.get_neighbors(opponent, only_available = True)
 
-        if len(available_cells) == 0:
-            available_cells = grid.getAvailableCells()
+        # edge case - if there are no available cell around opponent, then 
+        # player constitutes last trap and will win. throwing randomly.
+        if not available_neighbors:
+            return random.choice(grid.getAvailableCells())
+            
+        states = [grid.clone().trap(cell) for cell in available_neighbors]
+
+        # find trap that minimizes opponent's moves
+        is_scores = np.array([IS(state, 3 - self.player_num) for state in states])
 
         # throw to one of the available cells randomly
-        trap = random.choice(available_cells)
-
+        trap = available_neighbors[np.argmin(is_scores)] 
+    
         return trap
+
+
+def AM(grid : Grid, player_num):
+
+    available_moves = grid.get_neighbors(grid.find(player_num), only_available = True)
+
+    return len(available_moves)
+
+def IS(grid : Grid, player_num):
+
+    # find all available moves by Player
+    player_moves    = grid.get_neighbors(grid.find(player_num), only_available = True)
+    
+    # find all available moves by Opponent
+    opp_moves       = grid.get_neighbors(grid.find(3 - player_num), only_available = True)
+    
+    return len(player_moves) - len(opp_moves)
+
