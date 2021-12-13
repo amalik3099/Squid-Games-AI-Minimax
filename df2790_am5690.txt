@@ -1,0 +1,12 @@
+COMS 4701 - Artificial Intelligence 
+Homework 5 - Squid Games 
+
+Team name : teamDXB 
+
+Team members: 
+Aditya Malik - uni:am5690
+Demetrios Fassois - uni:df2790
+
+Team contributions: 
+Demetrios - ExpectMinimax algorithms, heuristics for expectminimax, coding opponent AI's
+Aditya - ExpectMinimax algorithm, testing performance against diff AI's 
